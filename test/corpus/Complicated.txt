@@ -1,0 +1,80 @@
+================================================================================
+Complicated Function
+================================================================================
+foo(x: Int, y: Bool) <== { y && x >= 0 } : Int = {
+    z := x + 3;
+    if(y) {
+        w := x + 4;
+    };
+}
+--------------------------------------------------------------------------------
+(source_file
+      (any_dec
+        (dec
+          (bind
+            (ident)
+            (starts_with_parens_expr
+              (parens_expr
+                (inner_expr
+                  (bind
+                    (ident)
+                    (bind_op)
+                    (expr
+                      (ident)))
+                  (bind
+                    (ident)
+                    (bind_op)
+                    (expr
+                      (ident)))))
+              (op
+                (op_ident))
+              (expr
+                (block
+                  (expr
+                    (op_app
+                      (expr
+                        (op_app
+                          (expr
+                            (ident))
+                          (op
+                            (op_ident))
+                          (expr
+                            (ident))))
+                      (op
+                        (op_ident))
+                      (expr
+                        (int_lit)))))))
+            (bind_op)
+            (expr
+              (ident)))
+          (expr
+            (block
+              (dec
+                (ident)
+                (expr
+                  (op_app
+                    (expr
+                      (ident))
+                    (op
+                      (op_ident))
+                    (expr
+                      (int_lit)))))
+              (expr
+                (fun_app
+                  (expr
+                    (ident))
+                  (parens_expr
+                    (inner_expr
+                      (expr
+                        (ident))))
+                  (block
+                    (dec
+                      (ident)
+                      (expr
+                        (op_app
+                          (expr
+                            (ident))
+                          (op
+                            (op_ident))
+                          (expr
+                            (int_lit)))))))))))))

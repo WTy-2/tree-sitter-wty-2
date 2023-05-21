@@ -1,0 +1,33 @@
+================================================================================
+Simple Function
+================================================================================
+foo(x: Int): Int = {
+    x + 3
+}
+--------------------------------------------------------------------------------
+(source_file
+      (any_dec
+        (dec
+          (bind
+            (ident)
+            (starts_with_parens_expr
+              (parens_expr
+                (inner_expr
+                  (bind
+                    (ident)
+                    (bind_op)
+                    (expr
+                      (ident))))))
+            (bind_op)
+            (expr
+              (ident)))
+          (expr
+            (block
+              (expr
+                (op_app
+                  (expr
+                    (ident))
+                  (op
+                    (op_ident))
+                  (expr
+                    (int_lit)))))))))
