@@ -49,4 +49,9 @@ mod tests {
             .set_language(super::language())
             .expect("Error loading wty_2 language");
     }
+
+    #[test]
+    fn lol() {
+        assert_eq!(1, 2);
+    }
 }
