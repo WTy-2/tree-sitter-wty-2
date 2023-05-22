@@ -80,7 +80,7 @@ module.exports = grammar({
     dat_ty_dec: $ => seq('datatype', $.ident, '=',
       many_bar_sep($.relaxed_bind)),
 
-    inst_dec: $ => seq('instance', $.expr, 'for', $.expr, optional($.dec_block)),
+    inst_dec: $ => seq('inst', $.expr, 'for', $.expr, optional($.dec_block)),
     pat_dec: $ => seq('pattern', $.pat, '=', $.pat),
 
     any_dec: $ => choice($.dec, $.dat_dec, $.ty_dec, $.inst_dec, $.pat_dec),
