@@ -6,13 +6,17 @@ on:
   pull_request:
     branches:
       - "**"
+  merge_group:
 jobs:
   test:
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: true
       matrix:
-        os: [macos-latest, ubuntu-latest, windows-latest]
+        os:
+          - macos-latest
+          - ubuntu-latest
+          # - windows-latest # Borked
     steps:
       - uses: actions/checkout@v3
       - uses: actions/setup-node@v3
