@@ -1,3 +1,33 @@
+const between = (l, r, p) => seq(l, p, r);
+
+const braces = (p) => between("{", "}", p);
+
+const parens = (p) => between("(", ")", p);
+
+const brackets = (p) => between("[", "]", p);
+
+const many_sep = (p, s) => optional(some_sep(p, s));
+
+const many_sep_trail = (p, s) => seq(many_sep(p, s), optional(s));
+
+const some_sep = (p, s) => seq(p, repeat(seq(s, p)));
+
+const some_sep_trail = (p, s) => seq(some_sep(p, s), optional(s));
+
+const many_comma_sep = (p) => many_sep_trail(p, ",");
+
+const some_comma_sep = (p) => some_sep_trail(p, ",");
+
+const many_semi_sep = (p) => many_sep(p, ";");
+
+const many_semi_sep_trail = (p) => many_sep_trail(p, ";");
+
+const some_semi_sep_trail = (p) => some_sep_trail(p, ";");
+
+const some_semi_sep = (p) => some_sep(p, ";");
+
+const many_bar_sep = (p) => many_sep(p, "|");
+
 module.exports = grammar({
   name: "wty_2",
   rules: {
@@ -120,63 +150,3 @@ module.exports = grammar({
       choice($.var_dec, $.dat_dec, $.ty_dec, $.inst_dec, $.pat_dec),
   },
 });
-
-function between(l, r, p) {
-  return seq(l, p, r);
-}
-
-function braces(p) {
-  return between("{", "}", p);
-}
-
-function parens(p) {
-  return between("(", ")", p);
-}
-
-function brackets(p) {
-  return between("[", "]", p);
-}
-
-function many_sep(p, s) {
-  return optional(some_sep(p, s));
-}
-
-function many_sep_trail(p, s) {
-  return seq(many_sep(p, s), optional(s));
-}
-
-function some_sep(p, s) {
-  return seq(p, repeat(seq(s, p)));
-}
-
-function some_sep_trail(p, s) {
-  return seq(some_sep(p, s), optional(s));
-}
-
-function many_comma_sep(p) {
-  return many_sep_trail(p, ",");
-}
-
-function some_comma_sep(p) {
-  return some_sep_trail(p, ",");
-}
-
-function many_semi_sep(p) {
-  return many_sep(p, ";");
-}
-
-function many_semi_sep_trail(p) {
-  return many_sep_trail(p, ";");
-}
-
-function some_semi_sep_trail(p) {
-  return some_sep_trail(p, ";");
-}
-
-function some_semi_sep(p) {
-  return some_sep(p, ";");
-}
-
-function many_bar_sep(p) {
-  return many_sep(p, "|");
-}
