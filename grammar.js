@@ -1,147 +1,182 @@
 module.exports = grammar({
-
   name: "wty_2",
   rules: {
-    source_file: $ => many_semi_sep($.any_dec),
+    source_file: ($) => repeat(seq($.any_dec, ";")),
 
-    /* See Haskell parser combinator grammar (or spec) for explanations of the 
+    /* See Haskell parser combinator grammar (or spec) for explanations of the
      * purpose of many of these constructs */
 
-    ident: $ => /[a-zA-Z]+/,
-    op_ident: $ => /[\+<=>\-/\\\*\.\|&]+/,
-    int_lit: $ => /\d+/,
+    low_ident: ($) => /[a-z][a-zA-Z0-9]*/,
+    up_ident: ($) => /[A-Z][a-zA-Z0-9]*/,
+    any_ident: ($) => choice($.low_ident, $.up_ident),
+    op_ident: ($) => /[\+<=>\-/\\\*\.\|&]+/,
+    int_lit: ($) => /\d+/,
 
-    expr: $ => prec.left(choice(
-      $.block,
-      $.match,
-      $.ident,
-      $.parens_expr,
-      $.fun_app,
-      $.cps_bind,
-      $.op_app,
-      $.int_lit,
-    )),
-    block: $ => braces(choice(
-      many_semi_sep_trail(choice($.dec, $.expr)),
-      $.expr)),
-    match: $ => seq('match', $.parens_expr, braces(repeat($.match_case))),
-    match_case: $ => seq(choice(
-      seq('case', $.parens_pat),
-      seq('tycase', $.parens_expr)),
-      '=>', $.expr),
+    expr: ($) =>
+      prec(
+        3,
+        seq(
+          choice(
+            $.erased_pair,
+            $.block,
+            $.any_ident,
+            $.no_brackets_parens_expr,
+            $.fun_app,
+            $.cps_bind,
+            $.op_app,
+            $.int_lit,
+            $.promoted
+          )
+        )
+      ),
+    block: ($) => braces(some_semi_sep_trail(choice($.var_dec, $.cps_bind))),
     // TODO: Not sure why I had to make this left-associative to remove
     // conflicts. Maybe should be right-associative?
-    fun_app: $ => prec.left(8,
-      seq($.expr, optional('?'), $.parens_expr, optional($.block))),
+    // TODO: Allow for blocks without parens: `do { ... }` vs `do() { ... }`
+    fun_app: ($) =>
+      prec.left(
+        8,
+        choice(
+          seq($.expr, optional("?"), $.parens_expr),
+          seq($.expr, optional(seq(optional("?"), $.parens_expr)), $.block)
+        )
+      ),
     // TODO: More weird associativity stuff
-    op_app: $ => prec.left(5, seq($.expr, $.op, some_sep($.expr, $.op))),
-    cps_bind: $ => prec(7, seq('!', $.expr)),
+    op_app: ($) => prec.left(5, seq($.expr, $.op, some_sep($.expr, $.op))),
+    cps_bind: ($) => prec(7, seq("!", $.expr)),
+    promoted: ($) => seq("'", $.expr),
 
-    op: $ => choice($.op_ident, $.indexed_op),
-    indexed_op: $ => prec(7, seq($.op_ident, $.brackets_expr)),
+    op: ($) => choice($.op_ident, $.indexed_op),
+    indexed_op: ($) => prec(7, seq($.op_ident, $.brackets_expr)),
 
-    parens_expr: $ => seq(
-      optional($.brackets_expr),
-      parens(optional($.inner_expr))),
-    brackets_expr: $ => brackets($.inner_expr),
-    inner_expr: $ => choice(some_comma_sep($.bind), some_comma_sep($.expr)),
-    starts_with_parens_expr: $ => seq($.parens_expr, optional(seq($.op, $.expr))),
+    no_brackets_parens_expr: ($) => parens(optional($.inner_expr)),
+    // Higher precedence than `expr` because we want to ensure the info that
+    // the expression can appear as a `parens_expr` to bubble out
+    parens_expr: ($) =>
+      prec(4, seq(optional($.brackets_expr), $.no_brackets_parens_expr)),
+    erased_pair: ($) => seq($.brackets_expr, $.expr),
+    brackets_expr: ($) => brackets($.inner_expr),
+    inner_expr: ($) => choice(some_comma_sep($.bind), some_comma_sep($.expr)),
+    starts_with_parens_expr: ($) =>
+      seq($.parens_expr, optional(seq($.op, $.expr))),
 
-    bind: $ => seq(
-      $.ident,
-      optional($.starts_with_parens_expr),
-      $.bind_op,
-      $.expr),
-    bind_op: $ => choice(':', ':=>', ':~'),
-    relaxed_bind: $ => seq(
-      $.ident,
-      optional($.parens_expr),
-      optional(seq($.bind_op, $.expr))),
+    bind: ($) => seq($.any_ident, $.bind_op, $.expr),
 
-    pat: $ => seq($.ident, optional($.parens_pat)),
-    parens_pat: $ => parens(optional($.inner_pat)),
-    inner_pat: $ => choice($.pat, some_comma_sep($.pat_elem)),
-    pat_elem: $ => seq('.', $.ident, optional(seq(' = ', $.ident))),
+    bind_op: ($) => choice(":", "<:", "<=:", "~:"),
+    relaxed_bind: ($) => seq($.any_ident, optional(seq($.bind_op, $.expr))),
+    // Like `pat` but lowercase constructors must be prefixed by the "match"
+    // keyword to disambiguate
+    disambig_pat: ($) =>
+      seq(
+        choice($.up_ident, seq("match", $.low_ident)),
+        optional($.parens_pat)
+      ),
+    pat: ($) => seq($.any_ident, optional($.parens_pat)),
+    parens_pat: ($) => parens(optional($.inner_pat)),
+    inner_pat: ($) => choice($.pat, some_comma_sep($.pat_elem)),
+    // TODO: Is the prefix "." REALLY necessary here?
+    // Does this support nested matching?
+    pat_elem: ($) => seq(".", $.any_ident, optional(seq("=", $.any_ident))),
 
-    dec: $ => seq(choice(
-      seq(choice($.bind, $.infallible_match), '='),
-      seq($.ident, ':=')),
-      $.expr),
-    infallible_match: $ => seq('case', $.parens_pat),
-    dec_block: $ => braces(many_semi_sep($.dec)),
+    var_dec: ($) =>
+      seq(
+        choice(
+          seq(choice($.bind, $.irrefutable_match), "="),
+          seq($.any_ident, ":="),
+          seq(
+            choice($.low_ident, seq("fn", $.up_ident)),
+            $.starts_with_parens_expr,
+            choice(seq(":", $.expr, "=", $.expr), seq(":=", $.expr))
+          )
+        ),
+        $.expr
+      ),
+    irrefutable_match: ($) => $.disambig_pat,
+    var_dec_block: ($) => braces(repeat(seq($.var_dec, ";"))),
 
-    dat_dec: $ => seq('data', $.relaxed_bind),
-    ty_dec: $ => seq('type', $.relaxed_bind,
-      choice(
-        $.closed_ty_dec_RHS,
-        optional($.open_ty_dec_RHS))),
-    open_ty_dec_RHS: $ => seq($.dec_block, '=>', $.expr),
-    closed_ty_dec_RHS: $ => seq('=', $.expr),
-    dat_ty_dec: $ => seq('datatype', $.ident, '=',
-      many_bar_sep($.relaxed_bind)),
+    dat_dec: ($) => seq("data", $.relaxed_bind),
+    ty_dec: ($) =>
+      seq(
+        "type",
+        $.relaxed_bind,
+        choice($.closed_ty_dec_RHS, optional($.open_ty_dec_RHS))
+      ),
+    open_ty_dec_RHS: ($) => seq($.var_dec_block, "<:", $.expr),
+    closed_ty_dec_RHS: ($) => seq("=", $.expr),
+    dat_ty_dec: ($) =>
+      seq("datatype", $.any_ident, "=", many_bar_sep($.relaxed_bind)),
 
-    inst_dec: $ => seq('instance', $.expr, 'for', $.expr, optional($.dec_block)),
-    pat_dec: $ => seq('pattern', $.pat, '=', $.pat),
+    inst_dec: ($) =>
+      seq(
+        "instance",
+        $.expr,
+        "for",
+        $.expr,
+        optional(seq("is", $.var_dec_block))
+      ),
+    pat_dec: ($) => seq("pattern", $.pat, "=", $.pat),
 
-    any_dec: $ => choice($.dec, $.dat_dec, $.ty_dec, $.inst_dec, $.pat_dec),
-  }
+    any_dec: ($) =>
+      choice($.var_dec, $.dat_dec, $.ty_dec, $.inst_dec, $.pat_dec),
+  },
 });
 
 function between(l, r, p) {
-  return seq(l, p, r)
+  return seq(l, p, r);
 }
 
-
 function braces(p) {
-  return between('{', '}', p)
+  return between("{", "}", p);
 }
 
 function parens(p) {
-  return between('(', ')', p)
+  return between("(", ")", p);
 }
 
 function brackets(p) {
-  return between('[', ']', p)
+  return between("[", "]", p);
 }
 
 function many_sep(p, s) {
-  return optional(some_sep(p, s))
+  return optional(some_sep(p, s));
 }
 
 function many_sep_trail(p, s) {
-  return seq(many_sep(p, s), optional(s))
+  return seq(many_sep(p, s), optional(s));
 }
 
 function some_sep(p, s) {
-  return seq(p, repeat(seq(s, p)))
+  return seq(p, repeat(seq(s, p)));
 }
 
 function some_sep_trail(p, s) {
-  return seq(some_sep(p, s), optional(s))
+  return seq(some_sep(p, s), optional(s));
 }
 
 function many_comma_sep(p) {
-  return many_sep_trail(p, ',')
+  return many_sep_trail(p, ",");
 }
 
 function some_comma_sep(p) {
-  return some_sep_trail(p, ',')
+  return some_sep_trail(p, ",");
 }
 
 function many_semi_sep(p) {
-  return many_sep(p, ';')
+  return many_sep(p, ";");
 }
 
 function many_semi_sep_trail(p) {
-  return many_sep_trail(p, ';')
+  return many_sep_trail(p, ";");
+}
+
+function some_semi_sep_trail(p) {
+  return some_sep_trail(p, ";");
 }
 
 function some_semi_sep(p) {
-  return some_sep(p, ';')
+  return some_sep(p, ";");
 }
 
 function many_bar_sep(p) {
-  return many_sep(p, '|')
+  return many_sep(p, "|");
 }
-
-

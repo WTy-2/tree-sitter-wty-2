@@ -1,0 +1,117 @@
+================================================================================
+Funky Functions
+================================================================================
+foo1(bar: (x: Int) -> Bool): Bool = bar(3);
+
+foo2(x: [y] 'Bar(y)): Int = with(x) {
+    \Bar(y) -> y
+};
+--------------------------------------------------------------------------------
+
+(source_file
+  (any_dec
+    (var_dec
+      (low_ident)
+      (starts_with_parens_expr
+        (parens_expr
+          (no_brackets_parens_expr
+            (inner_expr
+              (bind
+                (any_ident
+                  (low_ident))
+                (bind_op)
+                (expr
+                  (op_app
+                    (expr
+                      (no_brackets_parens_expr
+                        (inner_expr
+                          (bind
+                            (any_ident
+                              (low_ident))
+                            (bind_op)
+                            (expr
+                              (any_ident
+                                (up_ident)))))))
+                    (op
+                      (op_ident))
+                    (expr
+                      (any_ident
+                        (up_ident))))))))))
+      (expr
+        (any_ident
+          (up_ident)))
+      (expr
+        (any_ident
+          (low_ident)))
+      (expr
+        (no_brackets_parens_expr
+          (inner_expr
+            (expr
+              (int_lit)))))))
+  (ERROR
+    (low_ident)
+    (starts_with_parens_expr
+      (parens_expr
+        (no_brackets_parens_expr
+          (inner_expr
+            (bind
+              (any_ident
+                (low_ident))
+              (bind_op)
+              (expr
+                (erased_pair
+                  (brackets_expr
+                    (inner_expr
+                      (expr
+                        (any_ident
+                          (low_ident)))))
+                  (expr
+                    (promoted
+                      (expr
+                        (fun_app
+                          (expr
+                            (any_ident
+                              (up_ident)))
+                          (parens_expr
+                            (no_brackets_parens_expr
+                              (inner_expr
+                                (expr
+                                  (any_ident
+                                    (low_ident)))))))))))))))))
+    (expr
+      (any_ident
+        (up_ident)))
+    (expr
+      (op_app
+        (expr
+          (op_app
+            (expr
+              (fun_app
+                (expr
+                  (any_ident
+                    (low_ident)))
+                (parens_expr
+                  (no_brackets_parens_expr
+                    (inner_expr
+                      (expr
+                        (any_ident
+                          (low_ident))))))))
+            (ERROR)
+            (op
+              (op_ident))
+            (expr
+              (fun_app
+                (expr
+                  (any_ident
+                    (up_ident)))
+                (parens_expr
+                  (no_brackets_parens_expr
+                    (inner_expr
+                      (expr
+                        (any_ident
+                          (low_ident))))))))))
+        (op
+          (op_ident))
+        (expr
+          (any_ident
+            (low_ident)))))))

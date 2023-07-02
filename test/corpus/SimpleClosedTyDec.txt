@@ -1,13 +1,16 @@
 ================================================================================
 Simple Closed Type Declaration
 ================================================================================
-type Foo = Bar
+type Foo = Bar;
 --------------------------------------------------------------------------------
+
 (source_file
-      (any_dec
-        (ty_dec
-          (relaxed_bind
-            (ident))
-          (closed_ty_dec_RHS
-            (expr
-              (ident))))))
+  (any_dec
+    (ty_dec
+      (relaxed_bind
+        (any_ident
+          (up_ident)))
+      (closed_ty_dec_RHS
+        (expr
+          (any_ident
+            (up_ident)))))))

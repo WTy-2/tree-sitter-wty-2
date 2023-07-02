@@ -1,80 +1,99 @@
 ================================================================================
 Complicated Function
 ================================================================================
-foo(x: Int, y: Bool) <== { y && x >= 0 } : Int = {
+foo(x: Int, y: Bool) <<= { y && x >= 0 ~ True } : Int = do {
     z := x + 3;
     if(y) {
         w := x + 4;
     };
-}
+};
 --------------------------------------------------------------------------------
+
 (source_file
-      (any_dec
-        (dec
-          (bind
-            (ident)
+  (any_dec
+    (var_dec
+      (low_ident)
+      (starts_with_parens_expr
+        (parens_expr
+          (no_brackets_parens_expr
+            (inner_expr
+              (bind
+                (any_ident
+                  (low_ident))
+                (bind_op)
+                (expr
+                  (any_ident
+                    (up_ident))))
+              (bind
+                (any_ident
+                  (low_ident))
+                (bind_op)
+                (expr
+                  (any_ident
+                    (up_ident)))))))
+        (ERROR
+          (op
+            (op_ident))
+          (low_ident))
+        (op
+          (op_ident))
+        (expr
+          (op_app
+            (expr
+              (any_ident
+                (low_ident)))
+            (op
+              (op_ident))
+            (ERROR
+              (expr
+                (int_lit))
+              (UNEXPECTED '))
+            (expr
+              (any_ident
+                (up_ident))))))
+      (ERROR)
+      (expr
+        (any_ident
+          (up_ident)))
+      (expr
+        (any_ident
+          (low_ident)))
+      (expr
+        (block
+          (var_dec
+            (any_ident
+              (low_ident))
+            (expr
+              (op_app
+                (expr
+                  (any_ident
+                    (low_ident)))
+                (op
+                  (op_ident))
+                (expr
+                  (int_lit)))))
+          (ERROR
+            (low_ident)
             (starts_with_parens_expr
               (parens_expr
-                (inner_expr
-                  (bind
-                    (ident)
-                    (bind_op)
+                (no_brackets_parens_expr
+                  (inner_expr
                     (expr
-                      (ident)))
-                  (bind
-                    (ident)
-                    (bind_op)
-                    (expr
-                      (ident)))))
+                      (any_ident
+                        (low_ident))))))
               (op
-                (op_ident))
+                (MISSING op_ident))
               (expr
                 (block
-                  (expr
-                    (op_app
-                      (expr
-                        (op_app
-                          (expr
-                            (ident))
-                          (op
-                            (op_ident))
-                          (expr
-                            (ident))))
-                      (op
-                        (op_ident))
-                      (expr
-                        (int_lit)))))))
-            (bind_op)
-            (expr
-              (ident)))
-          (expr
-            (block
-              (dec
-                (ident)
-                (expr
-                  (op_app
+                  (var_dec
+                    (any_ident
+                      (low_ident))
                     (expr
-                      (ident))
-                    (op
-                      (op_ident))
-                    (expr
-                      (int_lit)))))
-              (expr
-                (fun_app
-                  (expr
-                    (ident))
-                  (parens_expr
-                    (inner_expr
-                      (expr
-                        (ident))))
-                  (block
-                    (dec
-                      (ident)
-                      (expr
-                        (op_app
-                          (expr
-                            (ident))
-                          (op
-                            (op_ident))
-                          (expr
-                            (int_lit)))))))))))))
+                      (op_app
+                        (expr
+                          (any_ident
+                            (low_ident)))
+                        (op
+                          (op_ident))
+                        (expr
+                          (int_lit))))))))))))))

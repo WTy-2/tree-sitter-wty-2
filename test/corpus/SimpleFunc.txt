@@ -1,33 +1,36 @@
 ================================================================================
 Simple Function
 ================================================================================
-foo(x: Int): Int = {
-    x + 3
-}
+foo(x: Int): Int = x + 3;
 --------------------------------------------------------------------------------
+
 (source_file
-      (any_dec
-        (dec
-          (bind
-            (ident)
-            (starts_with_parens_expr
-              (parens_expr
-                (inner_expr
-                  (bind
-                    (ident)
-                    (bind_op)
-                    (expr
-                      (ident))))))
-            (bind_op)
-            (expr
-              (ident)))
+  (any_dec
+    (var_dec
+      (low_ident)
+      (starts_with_parens_expr
+        (parens_expr
+          (no_brackets_parens_expr
+            (inner_expr
+              (bind
+                (any_ident
+                  (low_ident))
+                (bind_op)
+                (expr
+                  (any_ident
+                    (up_ident))))))))
+      (expr
+        (any_ident
+          (up_ident)))
+      (expr
+        (op_app
           (expr
-            (block
-              (expr
-                (op_app
-                  (expr
-                    (ident))
-                  (op
-                    (op_ident))
-                  (expr
-                    (int_lit)))))))))
+            (any_ident
+              (low_ident)))
+          (op
+            (op_ident))
+          (expr
+            (int_lit))))
+      (expr
+        (any_ident
+          (MISSING low_ident))))))
