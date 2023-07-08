@@ -85,37 +85,26 @@ foo2(x: [y] 'Bar(y)): Int = with(x) {
         (any_ident
           (up_ident)))
       (expr
-        (op_app
+        (fun_app
           (expr
-            (op_app
+            (fun_app
               (expr
-                (fun_app
-                  (expr
-                    (any_ident
-                      (low_ident)))
-                  (parens_expr
-                    (no_brackets_parens_expr
-                      (inner_expr
-                        (expr
-                          (any_ident
-                            (low_ident))))))))
-              (ERROR)
-              (op
-                (op_ident))
-              (expr
-                (fun_app
-                  (expr
-                    (any_ident
-                      (up_ident)))
-                  (parens_expr
-                    (no_brackets_parens_expr
-                      (inner_expr
-                        (expr
-                          (any_ident
-                            (low_ident))))))))))
-          (op
-            (op_ident))
-          (expr
-            (any_ident
-              (low_ident)))))))
-  (ERROR))
+                (any_ident
+                  (low_ident)))
+              (parens_expr
+                (no_brackets_parens_expr
+                  (inner_expr
+                    (expr
+                      (any_ident
+                        (low_ident))))))))
+          (block
+            (ERROR
+              (pat
+                (any_ident
+                  (up_ident))
+                (parens_pat
+                  (inner_pat
+                    (pat
+                      (any_ident
+                        (low_ident))))))
+              (low_ident))))))))

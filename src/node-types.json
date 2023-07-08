@@ -83,10 +83,14 @@
     "fields": {},
     "children": {
       "multiple": true,
-      "required": true,
+      "required": false,
       "types": [
         {
           "type": "cps_bind",
+          "named": true
+        },
+        {
+          "type": "pat",
           "named": true
         },
         {
@@ -165,7 +169,7 @@
       "required": true,
       "types": [
         {
-          "type": "low_ident",
+          "type": "any_ident",
           "named": true
         },
         {
@@ -644,10 +648,6 @@
         {
           "type": "starts_with_parens_expr",
           "named": true
-        },
-        {
-          "type": "up_ident",
-          "named": true
         }
       ]
     }
@@ -688,6 +688,10 @@
     "named": false
   },
   {
+    "type": "->",
+    "named": false
+  },
+  {
     "type": ".",
     "named": false
   },
@@ -721,6 +725,10 @@
   },
   {
     "type": "[",
+    "named": false
+  },
+  {
+    "type": "\\",
     "named": false
   },
   {

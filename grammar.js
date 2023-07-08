@@ -59,7 +59,27 @@ module.exports = grammar({
           )
         )
       ),
-    block: ($) => braces(some_semi_sep_trail(choice($.var_dec, $.cps_bind))),
+    block: ($) =>
+      braces(
+        choice(
+          some_semi_sep_trail(choice($.var_dec, $.cps_bind)),
+          seq(
+            "\\",
+            $.pat,
+            "->",
+            some_semi_sep_trail(choice($.var_dec, $.cps_bind))
+          ),
+          // Empty = empty case (i.e: value of closed type `Void`)
+          many_comma_sep(
+            seq(
+              "|",
+              $.pat,
+              "->",
+              some_semi_sep_trail(choice($.var_dec, $.cps_bind))
+            )
+          )
+        )
+      ),
     // TODO: Not sure why I had to make this left-associative to remove
     // conflicts. Maybe should be right-associative?
     // TODO: Allow for blocks without parens: `do { ... }` vs `do() { ... }`
@@ -98,9 +118,10 @@ module.exports = grammar({
     // keyword to disambiguate
     disambig_pat: ($) =>
       seq(
-        choice($.up_ident, seq("match", $.low_ident)),
+        choice($.up_ident, seq("match", $.any_ident)),
         optional($.parens_pat)
       ),
+    // TODO: Operator-constructor patterns
     pat: ($) => seq($.any_ident, optional($.parens_pat)),
     parens_pat: ($) => parens(optional($.inner_pat)),
     inner_pat: ($) => choice($.pat, some_comma_sep($.pat_elem)),
@@ -115,7 +136,7 @@ module.exports = grammar({
           seq($.any_ident, ":="),
           // Function definition
           seq(
-            choice($.low_ident, seq("fn", $.up_ident)),
+            choice($.low_ident, seq("fn", $.any_ident)),
             $.starts_with_parens_expr,
             choice(seq(":", $.expr, "="), ":=")
           )
