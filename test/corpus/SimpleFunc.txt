@@ -30,7 +30,4 @@ foo(x: Int): Int = x + 3;
           (op
             (op_ident))
           (expr
-            (int_lit))))
-      (expr
-        (any_ident
-          (MISSING low_ident))))))
+            (int_lit)))))))

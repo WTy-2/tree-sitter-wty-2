@@ -599,15 +599,15 @@
       "required": true,
       "types": [
         {
+          "type": "any_ident",
+          "named": true
+        },
+        {
           "type": "closed_ty_dec_RHS",
           "named": true
         },
         {
           "type": "open_ty_dec_RHS",
-          "named": true
-        },
-        {
-          "type": "relaxed_bind",
           "named": true
         }
       ]
@@ -752,10 +752,6 @@
     "named": true
   },
   {
-    "type": "is",
-    "named": false
-  },
-  {
     "type": "low_ident",
     "named": true
   },
@@ -778,6 +774,10 @@
   {
     "type": "up_ident",
     "named": true
+  },
+  {
+    "type": "where",
+    "named": false
   },
   {
     "type": "{",

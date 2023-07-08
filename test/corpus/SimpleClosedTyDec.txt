@@ -7,9 +7,8 @@ type Foo = Bar;
 (source_file
   (any_dec
     (ty_dec
-      (relaxed_bind
-        (any_ident
-          (up_ident)))
+      (any_ident
+        (up_ident))
       (closed_ty_dec_RHS
         (expr
           (any_ident

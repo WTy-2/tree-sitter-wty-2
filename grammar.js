@@ -113,10 +113,11 @@ module.exports = grammar({
         choice(
           seq(choice($.bind, $.irrefutable_match), "="),
           seq($.any_ident, ":="),
+          // Function definition
           seq(
             choice($.low_ident, seq("fn", $.up_ident)),
             $.starts_with_parens_expr,
-            choice(seq(":", $.expr, "=", $.expr), seq(":=", $.expr))
+            choice(seq(":", $.expr, "="), ":=")
           )
         ),
         $.expr
@@ -128,10 +129,10 @@ module.exports = grammar({
     ty_dec: ($) =>
       seq(
         "type",
-        $.relaxed_bind,
+        $.any_ident,
         choice($.closed_ty_dec_RHS, optional($.open_ty_dec_RHS))
       ),
-    open_ty_dec_RHS: ($) => seq($.var_dec_block, "<:", $.expr),
+    open_ty_dec_RHS: ($) => seq($.var_dec_block, optional(seq("<:", $.expr))),
     closed_ty_dec_RHS: ($) => seq("=", $.expr),
     dat_ty_dec: ($) =>
       seq("datatype", $.any_ident, "=", many_bar_sep($.relaxed_bind)),
@@ -142,7 +143,7 @@ module.exports = grammar({
         $.expr,
         "for",
         $.expr,
-        optional(seq("is", $.var_dec_block))
+        optional(seq("where", $.var_dec_block))
       ),
     pat_dec: ($) => seq("pattern", $.pat, "=", $.pat),
 

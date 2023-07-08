@@ -56,44 +56,45 @@ foo(x: Int, y: Bool) <<= { y && x >= 0 ~ True } : Int = do {
         (any_ident
           (up_ident)))
       (expr
-        (any_ident
-          (low_ident)))
-      (expr
-        (block
-          (var_dec
+        (fun_app
+          (expr
             (any_ident
-              (low_ident))
-            (expr
-              (op_app
-                (expr
-                  (any_ident
-                    (low_ident)))
-                (op
-                  (op_ident))
-                (expr
-                  (int_lit)))))
-          (ERROR
-            (low_ident)
-            (starts_with_parens_expr
-              (parens_expr
-                (no_brackets_parens_expr
-                  (inner_expr
-                    (expr
-                      (any_ident
-                        (low_ident))))))
-              (op
-                (MISSING op_ident))
+              (low_ident)))
+          (block
+            (var_dec
+              (any_ident
+                (low_ident))
               (expr
-                (block
-                  (var_dec
+                (op_app
+                  (expr
                     (any_ident
-                      (low_ident))
-                    (expr
-                      (op_app
-                        (expr
-                          (any_ident
-                            (low_ident)))
-                        (op
-                          (op_ident))
-                        (expr
-                          (int_lit))))))))))))))
+                      (low_ident)))
+                  (op
+                    (op_ident))
+                  (expr
+                    (int_lit)))))
+            (ERROR
+              (low_ident)
+              (starts_with_parens_expr
+                (parens_expr
+                  (no_brackets_parens_expr
+                    (inner_expr
+                      (expr
+                        (any_ident
+                          (low_ident))))))
+                (op
+                  (MISSING op_ident))
+                (expr
+                  (block
+                    (var_dec
+                      (any_ident
+                        (low_ident))
+                      (expr
+                        (op_app
+                          (expr
+                            (any_ident
+                              (low_ident)))
+                          (op
+                            (op_ident))
+                          (expr
+                            (int_lit)))))))))))))))
