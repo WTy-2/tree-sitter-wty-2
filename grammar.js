@@ -141,19 +141,23 @@ module.exports = grammar({
     // Does this support nested matching?
     pat_elem: ($) => seq(".", $.any_ident, optional(seq("=", $.any_ident))),
 
+    // Same precedence as function application to avoid that being prioritised
     var_dec: ($) =>
-      seq(
-        choice(
-          seq(choice($.bind, $.irrefutable_match), "="),
-          seq($.any_ident, ":="),
-          // Function definition
-          seq(
-            choice($.low_ident, seq("fn", $.any_ident)),
-            $.starts_with_parens_expr,
-            choice(seq(":", $.expr, "="), ":=")
-          )
-        ),
-        $.expr
+      prec(
+        1,
+        seq(
+          choice(
+            seq(choice($.bind, $.irrefutable_match), "="),
+            seq($.any_ident, ":="),
+            // Function definition
+            seq(
+              choice($.low_ident, seq("fn", $.any_ident)),
+              $.starts_with_parens_expr,
+              choice(seq(":", $.expr, "="), ":=")
+            )
+          ),
+          $.expr
+        )
       ),
     irrefutable_match: ($) => $.disambig_pat,
     var_dec_block: ($) => braces(repeat(seq($.var_dec, ";"))),
