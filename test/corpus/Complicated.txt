@@ -31,27 +31,32 @@ foo(x: Int, y: Bool) <<= { y && x >= 0 ~ True } : Int = do {
                 (expr
                   (any_ident
                     (up_ident)))))))
-        (ERROR
-          (op
-            (op_ident))
-          (low_ident))
         (op
           (op_ident))
         (expr
-          (op_app
-            (expr
-              (any_ident
-                (low_ident)))
-            (op
-              (op_ident))
-            (ERROR
+          (block
+            (blockContent
               (expr
-                (int_lit))
-              (UNEXPECTED '))
-            (expr
-              (any_ident
-                (up_ident))))))
-      (ERROR)
+                (op_app
+                  (expr
+                    (op_app
+                      (expr
+                        (any_ident
+                          (low_ident)))
+                      (op
+                        (op_ident))
+                      (expr
+                        (any_ident
+                          (low_ident)))))
+                  (op
+                    (op_ident))
+                  (ERROR
+                    (expr
+                      (int_lit))
+                    (UNEXPECTED '))
+                  (expr
+                    (any_ident
+                      (up_ident)))))))))
       (expr
         (any_ident
           (up_ident)))
@@ -61,40 +66,44 @@ foo(x: Int, y: Bool) <<= { y && x >= 0 ~ True } : Int = do {
             (any_ident
               (low_ident)))
           (block
-            (var_dec
-              (any_ident
-                (low_ident))
+            (blockContent
+              (var_dec
+                (any_ident
+                  (low_ident))
+                (expr
+                  (op_app
+                    (expr
+                      (any_ident
+                        (low_ident)))
+                    (op
+                      (op_ident))
+                    (expr
+                      (int_lit)))))
               (expr
-                (op_app
+                (fun_app
                   (expr
-                    (any_ident
-                      (low_ident)))
-                  (op
-                    (op_ident))
-                  (expr
-                    (int_lit)))))
-            (ERROR
-              (low_ident)
-              (starts_with_parens_expr
-                (parens_expr
-                  (no_brackets_parens_expr
-                    (inner_expr
+                    (fun_app
                       (expr
                         (any_ident
-                          (low_ident))))))
-                (op
-                  (MISSING op_ident))
-                (expr
+                          (low_ident)))
+                      (parens_expr
+                        (no_brackets_parens_expr
+                          (inner_expr
+                            (expr
+                              (any_ident
+                                (low_ident))))))))
                   (block
-                    (var_dec
-                      (any_ident
-                        (low_ident))
-                      (expr
-                        (op_app
-                          (expr
-                            (any_ident
-                              (low_ident)))
-                          (op
-                            (op_ident))
-                          (expr
-                            (int_lit)))))))))))))))
+                    (blockContent
+                      (var_dec
+                        (any_ident
+                          (low_ident))
+                        (expr
+                          (op_app
+                            (expr
+                              (any_ident
+                                (low_ident)))
+                            (op
+                              (op_ident))
+                            (expr
+                              (int_lit))))))))))
+            (ERROR)))))))

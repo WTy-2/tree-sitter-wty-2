@@ -6,13 +6,27 @@ const parens = (p) => between("(", ")", p);
 
 const brackets = (p) => between("[", "]", p);
 
+// Note we define "many" versions in terms of "some" - this is important, the
+// other way around creates ambiguities!!
+// e.g try:
+/*
+```
+const many_trail_with = (p, s) => repeat(seq((p, s));
+
+const some_trail_with = (p, s) => seq(p, s, many_trail_with(p, s));
+```
+*/
 const many_sep = (p, s) => optional(some_sep(p, s));
 
 const many_sep_trail = (p, s) => seq(many_sep(p, s), optional(s));
 
+const many_trail_with = (p, s) => optional(some_trail_with(p, s));
+
 const some_sep = (p, s) => seq(p, repeat(seq(s, p)));
 
 const some_sep_trail = (p, s) => seq(some_sep(p, s), optional(s));
+
+const some_trail_with = (p, s) => seq(p, s, repeat(seq(p, s)));
 
 const many_comma_sep = (p) => many_sep_trail(p, ",");
 
@@ -22,7 +36,11 @@ const many_semi_sep = (p) => many_sep(p, ";");
 
 const many_semi_sep_trail = (p) => many_sep_trail(p, ";");
 
+const many_trail_with_semi = (p) => many_trail_with(p, ";");
+
 const some_semi_sep_trail = (p) => some_sep_trail(p, ";");
+
+const some_trail_with_semi = (p) => some_trail_with(p, ";");
 
 const some_semi_sep = (p) => some_sep(p, ";");
 
@@ -38,7 +56,8 @@ module.exports = grammar({
 
     low_ident: ($) => /[a-z][a-zA-Z0-9]*/,
     up_ident: ($) => /[A-Z][a-zA-Z0-9]*/,
-    any_ident: ($) => choice($.low_ident, $.up_ident),
+    // Associativity correct here?
+    any_ident: ($) => prec.left(choice($.low_ident, $.up_ident)),
     op_ident: ($) => /[\+<=>\-/\\\*\.\|&]+/,
     int_lit: ($) => /\d+/,
 
@@ -59,25 +78,18 @@ module.exports = grammar({
           )
         )
       ),
+    blockContent: ($) =>
+      choice(
+        some_trail_with_semi(choice($.var_dec, $.cps_bind)),
+        seq(many_trail_with_semi(choice($.var_dec, $.cps_bind)), $.expr)
+      ),
     block: ($) =>
       braces(
         choice(
-          some_semi_sep_trail(choice($.var_dec, $.cps_bind)),
-          seq(
-            "\\",
-            $.pat,
-            "->",
-            some_semi_sep_trail(choice($.var_dec, $.cps_bind))
-          ),
+          $.blockContent,
+          seq("\\", $.pat, "->", $.blockContent),
           // Empty = empty case (i.e: value of closed type `Void`)
-          many_comma_sep(
-            seq(
-              "|",
-              $.pat,
-              "->",
-              some_semi_sep_trail(choice($.var_dec, $.cps_bind))
-            )
-          )
+          many_comma_sep(seq("|", $.pat, "->", $.blockContent))
         )
       ),
     // TODO: Not sure why I had to make this left-associative to remove

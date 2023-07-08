@@ -86,11 +86,30 @@
       "required": false,
       "types": [
         {
-          "type": "cps_bind",
+          "type": "blockContent",
           "named": true
         },
         {
           "type": "pat",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "blockContent",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": true,
+      "types": [
+        {
+          "type": "cps_bind",
+          "named": true
+        },
+        {
+          "type": "expr",
           "named": true
         },
         {
