@@ -64,6 +64,7 @@ module.exports = grammar({
     [$.any_ident, $.disambig_pat],
     [$.no_brackets_parens_expr, $.parens_pat],
     [$.any_ident, $.pat_elem],
+    // Ambiguity between assignments and expressions in braces
     [$.any_ident, $.var_dec],
   ],
 
@@ -146,7 +147,7 @@ module.exports = grammar({
     starts_with_parens_expr: ($) =>
       seq($.parens_expr, optional(seq($.op, $.expr))),
 
-    bind: ($) => seq($.any_ident, $.bind_op, $.expr),
+    bind: ($) => seq($.pat, $.bind_op, $.expr),
     bind_op: ($) => choice(":", "<:", "<=:", "~:"),
 
     // Like `pat` but lowercase constructors must be prefixed by the "match"

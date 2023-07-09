@@ -13,8 +13,9 @@ foo(x: Int): Int = x + 3;
           (no_brackets_parens_expr
             (inner_expr
               (bind
-                (any_ident
-                  (low_ident))
+                (pat
+                  (any_ident
+                    (low_ident)))
                 (bind_op)
                 (expr
                   (any_ident

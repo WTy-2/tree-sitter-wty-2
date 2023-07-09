@@ -15,8 +15,9 @@ bar(x: Int) := do { baz(x) := do { x + 1 }; baz(x) };
           (no_brackets_parens_expr
             (inner_expr
               (bind
-                (any_ident
-                  (low_ident))
+                (pat
+                  (any_ident
+                    (low_ident)))
                 (bind_op)
                 (expr
                   (any_ident
@@ -47,8 +48,9 @@ bar(x: Int) := do { baz(x) := do { x + 1 }; baz(x) };
           (no_brackets_parens_expr
             (inner_expr
               (bind
-                (any_ident
-                  (low_ident))
+                (pat
+                  (any_ident
+                    (low_ident)))
                 (bind_op)
                 (expr
                   (any_ident

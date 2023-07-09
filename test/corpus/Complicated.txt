@@ -19,15 +19,17 @@ foo(x: Int, y: Bool) <<= { y && x >= 0 ~ True } : IO() = do {
           (no_brackets_parens_expr
             (inner_expr
               (bind
-                (any_ident
-                  (low_ident))
+                (pat
+                  (any_ident
+                    (low_ident)))
                 (bind_op)
                 (expr
                   (any_ident
                     (up_ident))))
               (bind
-                (any_ident
-                  (low_ident))
+                (pat
+                  (any_ident
+                    (low_ident)))
                 (bind_op)
                 (expr
                   (any_ident

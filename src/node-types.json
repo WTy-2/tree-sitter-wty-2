@@ -58,15 +58,15 @@
       "required": true,
       "types": [
         {
-          "type": "any_ident",
-          "named": true
-        },
-        {
           "type": "bind_op",
           "named": true
         },
         {
           "type": "expr",
+          "named": true
+        },
+        {
+          "type": "pat",
           "named": true
         }
       ]

@@ -22,8 +22,9 @@ temp := foo[1](1){1};
           (no_brackets_parens_expr
             (inner_expr
               (bind
-                (any_ident
-                  (low_ident))
+                (pat
+                  (any_ident
+                    (low_ident)))
                 (bind_op)
                 (expr
                   (op_app
@@ -31,8 +32,9 @@ temp := foo[1](1){1};
                       (no_brackets_parens_expr
                         (inner_expr
                           (bind
-                            (any_ident
-                              (low_ident))
+                            (pat
+                              (any_ident
+                                (low_ident)))
                             (bind_op)
                             (expr
                               (any_ident
@@ -63,8 +65,9 @@ temp := foo[1](1){1};
           (no_brackets_parens_expr
             (inner_expr
               (bind
-                (any_ident
-                  (low_ident))
+                (pat
+                  (any_ident
+                    (low_ident)))
                 (bind_op)
                 (expr
                   (erased_pair
@@ -122,8 +125,9 @@ temp := foo[1](1){1};
           (brackets_expr
             (inner_expr
               (bind
-                (any_ident
-                  (low_ident))
+                (pat
+                  (any_ident
+                    (low_ident)))
                 (bind_op)
                 (expr
                   (any_ident
@@ -131,15 +135,17 @@ temp := foo[1](1){1};
           (no_brackets_parens_expr
             (inner_expr
               (bind
-                (any_ident
-                  (low_ident))
+                (pat
+                  (any_ident
+                    (low_ident)))
                 (bind_op)
                 (expr
                   (any_ident
                     (low_ident))))
               (bind
-                (any_ident
-                  (low_ident))
+                (pat
+                  (any_ident
+                    (low_ident)))
                 (bind_op)
                 (expr
                   (op_app

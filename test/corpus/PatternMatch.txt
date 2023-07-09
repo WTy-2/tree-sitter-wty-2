@@ -22,29 +22,33 @@ foo(x: Bar) := with(x) {
             (no_brackets_parens_expr
               (inner_expr
                 (bind
-                  (any_ident
-                    (low_ident))
+                  (pat
+                    (any_ident
+                      (low_ident)))
                   (bind_op)
                   (expr
                     (any_ident
                       (up_ident))))
                 (bind
-                  (any_ident
-                    (low_ident))
+                  (pat
+                    (any_ident
+                      (low_ident)))
                   (bind_op)
                   (expr
                     (any_ident
                       (up_ident))))
                 (bind
-                  (any_ident
-                    (low_ident))
+                  (pat
+                    (any_ident
+                      (low_ident)))
                   (bind_op)
                   (expr
                     (any_ident
                       (up_ident))))
                 (bind
-                  (any_ident
-                    (low_ident))
+                  (pat
+                    (any_ident
+                      (low_ident)))
                   (bind_op)
                   (expr
                     (fun_app
@@ -65,8 +69,9 @@ foo(x: Bar) := with(x) {
           (no_brackets_parens_expr
             (inner_expr
               (bind
-                (any_ident
-                  (low_ident))
+                (pat
+                  (any_ident
+                    (low_ident)))
                 (bind_op)
                 (expr
                   (any_ident
