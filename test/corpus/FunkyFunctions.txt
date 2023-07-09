@@ -7,9 +7,9 @@ foo2(x: [y] 'Bar(y)): Int = with(x) {
     \Bar(y) -> y
 };
 
-foo3[x: Any](y ~: x, f: Unit -> 'x);
+foo3[x: Any](y ~: x, f: Unit -> 'x) := f();
 
-temp = foo[1](1){1};
+temp := foo[1](1){1};
 
 --------------------------------------------------------------------------------
 
@@ -47,9 +47,7 @@ temp = foo[1](1){1};
           (up_ident)))
       (expr
         (fun_app
-          (expr
-            (any_ident
-              (low_ident)))
+          (low_ident)
           (parens_expr
             (no_brackets_parens_expr
               (inner_expr
@@ -93,9 +91,7 @@ temp = foo[1](1){1};
         (fun_app
           (expr
             (fun_app
-              (expr
-                (any_ident
-                  (low_ident)))
+              (low_ident)
               (parens_expr
                 (no_brackets_parens_expr
                   (inner_expr
@@ -115,60 +111,69 @@ temp = foo[1](1){1};
               (expr
                 (any_ident
                   (low_ident)))))))))
-  (ERROR
-    (low_ident)
-    (ERROR
-      (parens_expr
-        (brackets_expr
-          (inner_expr
-            (bind
-              (any_ident
-                (low_ident))
-              (bind_op)
-              (expr
+  (any_dec
+    (var_dec
+      (low_ident)
+      (starts_with_parens_expr
+        (parens_expr
+          (brackets_expr
+            (inner_expr
+              (bind
                 (any_ident
-                  (up_ident))))))
-        (no_brackets_parens_expr
-          (inner_expr
-            (bind
-              (any_ident
-                (low_ident))
-              (bind_op)
-              (expr
+                  (low_ident))
+                (bind_op)
+                (expr
+                  (any_ident
+                    (up_ident))))))
+          (no_brackets_parens_expr
+            (inner_expr
+              (bind
                 (any_ident
-                  (low_ident))))
-            (bind
-              (any_ident
-                (low_ident))
-              (bind_op)
-              (expr
-                (op_app
-                  (expr
-                    (any_ident
-                      (up_ident)))
-                  (op
-                    (op_ident))
-                  (expr
-                    (promoted
-                      (expr
-                        (any_ident
-                          (low_ident)))))))))))
-      (UNEXPECTED 'e')
-      (UNEXPECTED 'o'))
-    (starts_with_parens_expr
-      (parens_expr
-        (brackets_expr
-          (inner_expr
-            (expr
-              (int_lit))))
-        (no_brackets_parens_expr
-          (inner_expr
-            (expr
-              (int_lit)))))
-      (op
-        (MISSING op_ident))
+                  (low_ident))
+                (bind_op)
+                (expr
+                  (any_ident
+                    (low_ident))))
+              (bind
+                (any_ident
+                  (low_ident))
+                (bind_op)
+                (expr
+                  (op_app
+                    (expr
+                      (any_ident
+                        (up_ident)))
+                    (op
+                      (op_ident))
+                    (expr
+                      (promoted
+                        (expr
+                          (any_ident
+                            (low_ident))))))))))))
       (expr
-        (block
-          (blockContent
-            (expr
-              (int_lit))))))))
+        (fun_app
+          (low_ident)
+          (parens_expr
+            (no_brackets_parens_expr))))))
+  (any_dec
+    (var_dec
+      (any_ident
+        (low_ident))
+      (expr
+        (fun_app
+          (expr
+            (fun_app
+              (low_ident)
+              (parens_expr
+                (brackets_expr
+                  (inner_expr
+                    (expr
+                      (int_lit))))
+                (no_brackets_parens_expr
+                  (inner_expr
+                    (expr
+                      (int_lit)))))))
+          (block
+            (blockContent
+              (expr
+                (int_lit)))))))))

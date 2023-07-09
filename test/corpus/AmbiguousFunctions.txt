@@ -1,0 +1,94 @@
+================================================================================
+Ambiguous Functions
+================================================================================
+foo(x: Int) := do { bar(x) };
+
+bar(x: Int) := do { baz(x) := do { x + 1 }; baz(x) };
+--------------------------------------------------------------------------------
+
+(source_file
+  (any_dec
+    (var_dec
+      (low_ident)
+      (starts_with_parens_expr
+        (parens_expr
+          (no_brackets_parens_expr
+            (inner_expr
+              (bind
+                (any_ident
+                  (low_ident))
+                (bind_op)
+                (expr
+                  (any_ident
+                    (up_ident))))))))
+      (expr
+        (fun_app
+          (expr
+            (any_ident
+              (low_ident)))
+          (block
+            (blockContent
+              (expr
+                (fun_app
+                  (low_ident)
+                  (parens_expr
+                    (no_brackets_parens_expr
+                      (inner_expr
+                        (expr
+                          (any_ident
+                            (low_ident))))))))))))))
+  (any_dec
+    (var_dec
+      (low_ident)
+      (starts_with_parens_expr
+        (parens_expr
+          (no_brackets_parens_expr
+            (inner_expr
+              (bind
+                (any_ident
+                  (low_ident))
+                (bind_op)
+                (expr
+                  (any_ident
+                    (up_ident))))))))
+      (expr
+        (fun_app
+          (expr
+            (any_ident
+              (low_ident)))
+          (block
+            (blockContent
+              (var_dec
+                (low_ident)
+                (starts_with_parens_expr
+                  (parens_expr
+                    (no_brackets_parens_expr
+                      (inner_expr
+                        (expr
+                          (any_ident
+                            (low_ident)))))))
+                (expr
+                  (fun_app
+                    (expr
+                      (any_ident
+                        (low_ident)))
+                    (block
+                      (blockContent
+                        (expr
+                          (op_app
+                            (expr
+                              (any_ident
+                                (low_ident)))
+                            (op
+                              (op_ident))
+                            (expr
+                              (int_lit)))))))))
+              (expr
+                (fun_app
+                  (low_ident)
+                  (parens_expr
+                    (no_brackets_parens_expr
+                      (inner_expr
+                        (expr
+                          (any_ident
+                            (low_ident)))))))))))))))

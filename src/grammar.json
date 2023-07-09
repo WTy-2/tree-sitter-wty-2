@@ -44,7 +44,7 @@
     },
     "op_ident": {
       "type": "PATTERN",
-      "value": "[\\+<=>\\-/\\\\\\*\\.\\|&]+"
+      "value": "[\\+<=>\\-/\\\\\\*\\.\\|&~]+"
     },
     "int_lit": {
       "type": "PATTERN",
@@ -413,6 +413,19 @@
               {
                 "type": "SYMBOL",
                 "name": "block"
+              }
+            ]
+          },
+          {
+            "type": "SEQ",
+            "members": [
+              {
+                "type": "SYMBOL",
+                "name": "low_ident"
+              },
+              {
+                "type": "SYMBOL",
+                "name": "parens_expr"
               }
             ]
           }

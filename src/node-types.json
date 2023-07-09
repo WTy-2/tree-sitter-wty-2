@@ -285,6 +285,10 @@
           "named": true
         },
         {
+          "type": "low_ident",
+          "named": true
+        },
+        {
           "type": "parens_expr",
           "named": true
         }

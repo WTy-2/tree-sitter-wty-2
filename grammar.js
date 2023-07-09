@@ -58,7 +58,7 @@ module.exports = grammar({
     up_ident: ($) => /[A-Z][a-zA-Z0-9]*/,
     // Associativity correct here?
     any_ident: ($) => prec.left(choice($.low_ident, $.up_ident)),
-    op_ident: ($) => /[\+<=>\-/\\\*\.\|&]+/,
+    op_ident: ($) => /[\+<=>\-/\\\*\.\|&~]+/,
     int_lit: ($) => /\d+/,
 
     expr: ($) =>
@@ -100,7 +100,10 @@ module.exports = grammar({
         8,
         choice(
           seq($.expr, optional("?"), $.parens_expr),
-          seq($.expr, optional(seq(optional("?"), $.parens_expr)), $.block)
+          seq($.expr, optional(seq(optional("?"), $.parens_expr)), $.block),
+          // Very suspicious rule: overlaps with first but reqired because
+          // tree-sitter can't always reduce `low_ident` to `expr`
+          seq($.low_ident, $.parens_expr)
         )
       ),
     // TODO: More weird associativity stuff

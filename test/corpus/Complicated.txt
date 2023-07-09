@@ -1,10 +1,11 @@
 ================================================================================
 Complicated Function
 ================================================================================
-foo(x: Int, y: Bool) <<= { y && x >= 0 ~ True } : Int = do {
+foo(x: Int, y: Bool) <<= { y && x >= 0 ~ True } : IO() = do {
     z := x + 3;
-    if(y) {
+    !seq(y) {
         w := x + 4;
+        !print(w);
     };
 };
 --------------------------------------------------------------------------------
@@ -41,25 +42,31 @@ foo(x: Int, y: Bool) <<= { y && x >= 0 ~ True } : Int = do {
                   (expr
                     (op_app
                       (expr
-                        (any_ident
-                          (low_ident)))
+                        (op_app
+                          (expr
+                            (any_ident
+                              (low_ident)))
+                          (op
+                            (op_ident))
+                          (expr
+                            (any_ident
+                              (low_ident)))))
                       (op
                         (op_ident))
                       (expr
-                        (any_ident
-                          (low_ident)))))
+                        (int_lit))))
                   (op
                     (op_ident))
-                  (ERROR
-                    (expr
-                      (int_lit))
-                    (UNEXPECTED '))
                   (expr
                     (any_ident
                       (up_ident)))))))))
       (expr
-        (any_ident
-          (up_ident)))
+        (fun_app
+          (expr
+            (any_ident
+              (up_ident)))
+          (parens_expr
+            (no_brackets_parens_expr))))
       (expr
         (fun_app
           (expr
@@ -79,31 +86,39 @@ foo(x: Int, y: Bool) <<= { y && x >= 0 ~ True } : Int = do {
                       (op_ident))
                     (expr
                       (int_lit)))))
-              (expr
-                (fun_app
-                  (expr
-                    (fun_app
-                      (expr
-                        (any_ident
-                          (low_ident)))
-                      (parens_expr
-                        (no_brackets_parens_expr
-                          (inner_expr
-                            (expr
-                              (any_ident
-                                (low_ident))))))))
-                  (block
-                    (blockContent
-                      (var_dec
-                        (any_ident
-                          (low_ident))
-                        (expr
-                          (op_app
-                            (expr
-                              (any_ident
-                                (low_ident)))
-                            (op
-                              (op_ident))
-                            (expr
-                              (int_lit))))))))))
-            (ERROR)))))))
+              (cps_bind
+                (expr
+                  (fun_app
+                    (expr
+                      (fun_app
+                        (low_ident)
+                        (parens_expr
+                          (no_brackets_parens_expr
+                            (inner_expr
+                              (expr
+                                (any_ident
+                                  (low_ident))))))))
+                    (block
+                      (blockContent
+                        (var_dec
+                          (any_ident
+                            (low_ident))
+                          (expr
+                            (op_app
+                              (expr
+                                (any_ident
+                                  (low_ident)))
+                              (op
+                                (op_ident))
+                              (expr
+                                (int_lit)))))
+                        (cps_bind
+                          (expr
+                            (fun_app
+                              (low_ident)
+                              (parens_expr
+                                (no_brackets_parens_expr
+                                  (inner_expr
+                                    (expr
+                                      (any_ident
+                                        (low_ident)))))))))))))))))))))
