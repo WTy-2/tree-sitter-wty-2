@@ -64,6 +64,7 @@ module.exports = grammar({
     [$.any_ident, $.disambig_pat],
     [$.no_brackets_parens_expr, $.parens_pat],
     [$.any_ident, $.pat_elem],
+    [$.any_ident, $.var_dec],
   ],
 
   rules: {
@@ -74,8 +75,7 @@ module.exports = grammar({
 
     low_ident: ($) => /[a-z][a-zA-Z0-9]*/,
     up_ident: ($) => /[A-Z][a-zA-Z0-9]*/,
-    // I have no idea what the associativity here is doing...
-    any_ident: ($) => prec.left(choice($.low_ident, $.up_ident)),
+    any_ident: ($) => choice($.low_ident, $.up_ident),
     op_ident: ($) => /[\+<=>\-/\\\*\.\|&~]+/,
     int_lit: ($) => /\d+/,
 
@@ -122,10 +122,7 @@ module.exports = grammar({
         8,
         choice(
           seq($.expr, optional("?"), $.parens_expr),
-          seq($.expr, optional(seq(optional("?"), $.parens_expr)), $.block),
-          // Very suspicious rule: overlaps with first but reqired because
-          // tree-sitter can't always reduce `low_ident` to `expr`
-          seq($.low_ident, $.parens_expr)
+          seq($.expr, optional(seq(optional("?"), $.parens_expr)), $.block)
         )
       ),
 
@@ -156,6 +153,7 @@ module.exports = grammar({
     // keyword to disambiguate
     disambig_pat: ($) =>
       choice("_", $.parens_pat, seq(match_ident($), optional($.parens_pat))),
+
     pat: ($) =>
       choice("_", $.parens_pat, seq($.any_ident, optional($.parens_pat))),
     parens_pat: ($) => parens(optional($.inner_pat)),
@@ -170,21 +168,18 @@ module.exports = grammar({
 
     // No idea why precedence of 1 vs 0 is significant here, but it is :/
     var_dec: ($) =>
-      prec(
-        1,
-        seq(
-          choice(
-            seq(choice($.bind, $.irrefutable_match), "="),
-            seq($.any_ident, ":="),
-            // Function definition
-            seq(
-              def_ident($),
-              $.starts_with_parens_expr,
-              choice(seq(":", $.expr, "="), ":=")
-            )
-          ),
-          $.expr
-        )
+      seq(
+        choice(
+          seq(choice($.bind, $.irrefutable_match), "="),
+          seq($.any_ident, ":="),
+          // Function definition
+          seq(
+            def_ident($),
+            $.starts_with_parens_expr,
+            choice(seq(":", $.expr, "="), ":=")
+          )
+        ),
+        $.expr
       ),
     irrefutable_match: ($) => $.disambig_pat,
     var_dec_block: ($) => braces(repeat(seq($.var_dec, ";"))),

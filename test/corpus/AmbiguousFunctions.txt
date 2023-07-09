@@ -30,7 +30,9 @@ bar(x: Int) := do { baz(x) := do { x + 1 }; baz(x) };
             (blockContent
               (expr
                 (fun_app
-                  (low_ident)
+                  (expr
+                    (any_ident
+                      (low_ident)))
                   (parens_expr
                     (no_brackets_parens_expr
                       (inner_expr
@@ -85,7 +87,9 @@ bar(x: Int) := do { baz(x) := do { x + 1 }; baz(x) };
                               (int_lit)))))))))
               (expr
                 (fun_app
-                  (low_ident)
+                  (expr
+                    (any_ident
+                      (low_ident)))
                   (parens_expr
                     (no_brackets_parens_expr
                       (inner_expr

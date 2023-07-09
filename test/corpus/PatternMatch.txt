@@ -75,7 +75,9 @@ foo(x: Bar) := with(x) {
         (fun_app
           (expr
             (fun_app
-              (low_ident)
+              (expr
+                (any_ident
+                  (low_ident)))
               (parens_expr
                 (no_brackets_parens_expr
                   (inner_expr
