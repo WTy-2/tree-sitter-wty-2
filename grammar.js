@@ -46,6 +46,10 @@ const some_semi_sep = (p) => some_sep(p, ";");
 
 const many_bar_sep = (p) => many_sep(p, "|");
 
+const match_ident = ($) => choice(seq("match", $.any_ident), $.up_ident);
+
+const def_ident = ($) => choice(seq("def", $.any_ident), $.low_ident);
+
 module.exports = grammar({
   name: "WTy2",
 
@@ -59,6 +63,7 @@ module.exports = grammar({
     // Or an expression: `{ (Foo) }`
     [$.any_ident, $.disambig_pat],
     [$.no_brackets_parens_expr, $.parens_pat],
+    [$.any_ident, $.pat_elem],
   ],
 
   rules: {
@@ -145,28 +150,23 @@ module.exports = grammar({
       seq($.parens_expr, optional(seq($.op, $.expr))),
 
     bind: ($) => seq($.any_ident, $.bind_op, $.expr),
-
     bind_op: ($) => choice(":", "<:", "<=:", "~:"),
-    relaxed_bind: ($) => seq($.any_ident, optional(seq($.bind_op, $.expr))),
+
     // Like `pat` but lowercase constructors must be prefixed by the "match"
     // keyword to disambiguate
     disambig_pat: ($) =>
-      choice(
-        "_",
-        $.parens_pat,
-        seq(
-          choice($.up_ident, seq("match", $.any_ident)),
-          optional($.parens_pat)
-        )
-      ),
+      choice("_", $.parens_pat, seq(match_ident($), optional($.parens_pat))),
     pat: ($) =>
       choice("_", $.parens_pat, seq($.any_ident, optional($.parens_pat))),
     parens_pat: ($) => parens(optional($.inner_pat)),
-    inner_pat: ($) => choice($.disambig_pat, some_comma_sep($.pat_elem)),
+    inner_pat: ($) => some_comma_sep($.pat_elem),
     // TODO: Is the prefix "." REALLY necessary here?
     // Does this support nested matching?
     pat_elem: ($) =>
-      seq(seq(".", $.any_ident), optional(seq("=", $.any_ident))),
+      seq(
+        choice(def_ident($), $.disambig_pat),
+        optional(seq("=", $.any_ident))
+      ),
 
     // No idea why precedence of 1 vs 0 is significant here, but it is :/
     var_dec: ($) =>
@@ -178,7 +178,7 @@ module.exports = grammar({
             seq($.any_ident, ":="),
             // Function definition
             seq(
-              choice($.low_ident, seq("fn", $.any_ident)),
+              def_ident($),
               $.starts_with_parens_expr,
               choice(seq(":", $.expr, "="), ":=")
             )
@@ -189,7 +189,8 @@ module.exports = grammar({
     irrefutable_match: ($) => $.disambig_pat,
     var_dec_block: ($) => braces(repeat(seq($.var_dec, ";"))),
 
-    dat_dec: ($) => seq("data", $.relaxed_bind),
+    dat_dec_bind: ($) => seq($.any_ident, optional($.starts_with_parens_expr)),
+    dat_dec: ($) => seq("data", $.dat_dec_bind),
     ty_dec: ($) =>
       seq(
         "type",
@@ -198,8 +199,21 @@ module.exports = grammar({
       ),
     open_ty_dec_RHS: ($) => seq($.var_dec_block, optional(seq("<:", $.expr))),
     closed_ty_dec_RHS: ($) => seq("=", $.expr),
+
+    dat_ty_dec_bind: ($) =>
+      seq(
+        $.any_ident,
+        optional($.starts_with_parens_expr),
+        optional(seq($.bind_op, $.expr))
+      ),
     dat_ty_dec: ($) =>
-      seq("datatype", $.any_ident, "=", many_bar_sep($.relaxed_bind)),
+      seq(
+        "datatype",
+        $.any_ident,
+        optional($.starts_with_parens_expr),
+        "=",
+        many_bar_sep($.dat_ty_dec_bind)
+      ),
 
     inst_dec: ($) =>
       seq(

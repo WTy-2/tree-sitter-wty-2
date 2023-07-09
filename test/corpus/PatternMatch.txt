@@ -1,14 +1,62 @@
 ================================================================================
 Pattern Match
 ================================================================================
+data Bar(f0: Nat, f1: Bool, f3: Int, f4: List(Char));
+
 foo(x: Bar) := with(x) {
 | Baz(Zero, True, y, (z, w)) -> 0,
 | Baz(Succ(x), _, _, Cons(z, _)) -> 1,
+| Baz(b=f1, Succ(Zero)=f0) -> 3,
 | _ -> 2
-}
+};
 --------------------------------------------------------------------------------
 
 (source_file
+  (any_dec
+    (dat_dec
+      (dat_dec_bind
+        (any_ident
+          (up_ident))
+        (starts_with_parens_expr
+          (parens_expr
+            (no_brackets_parens_expr
+              (inner_expr
+                (bind
+                  (any_ident
+                    (low_ident))
+                  (bind_op)
+                  (expr
+                    (any_ident
+                      (up_ident))))
+                (bind
+                  (any_ident
+                    (low_ident))
+                  (bind_op)
+                  (expr
+                    (any_ident
+                      (up_ident))))
+                (bind
+                  (any_ident
+                    (low_ident))
+                  (bind_op)
+                  (expr
+                    (any_ident
+                      (up_ident))))
+                (bind
+                  (any_ident
+                    (low_ident))
+                  (bind_op)
+                  (expr
+                    (fun_app
+                      (expr
+                        (any_ident
+                          (up_ident)))
+                      (parens_expr
+                        (no_brackets_parens_expr
+                          (inner_expr
+                            (expr
+                              (any_ident
+                                (up_ident))))))))))))))))
   (any_dec
     (var_dec
       (low_ident)
@@ -39,17 +87,23 @@ foo(x: Bar) := with(x) {
               (any_ident
                 (up_ident))
               (parens_pat
-                (ERROR
-                  (up_ident))
                 (inner_pat
-                  (disambig_pat
-                    (up_ident)
-                    (ERROR
-                      (UNEXPECTED 'y'))
-                    (parens_pat
-                      (ERROR
-                        (UNEXPECTED 'z')
-                        (UNEXPECTED ')))))))
+                  (pat_elem
+                    (disambig_pat
+                      (up_ident)))
+                  (pat_elem
+                    (disambig_pat
+                      (up_ident)))
+                  (pat_elem
+                    (low_ident))
+                  (pat_elem
+                    (disambig_pat
+                      (parens_pat
+                        (inner_pat
+                          (pat_elem
+                            (low_ident))
+                          (pat_elem
+                            (low_ident)))))))))
             (blockContent
               (expr
                 (int_lit)))
@@ -57,26 +111,53 @@ foo(x: Bar) := with(x) {
               (any_ident
                 (up_ident))
               (parens_pat
-                (ERROR
-                  (inner_pat
+                (inner_pat
+                  (pat_elem
                     (disambig_pat
                       (up_ident)
                       (parens_pat
-                        (ERROR
-                          (UNEXPECTED 'x'))))))
+                        (inner_pat
+                          (pat_elem
+                            (low_ident))))))
+                  (pat_elem
+                    (disambig_pat))
+                  (pat_elem
+                    (disambig_pat))
+                  (pat_elem
+                    (disambig_pat
+                      (up_ident)
+                      (parens_pat
+                        (inner_pat
+                          (pat_elem
+                            (low_ident))
+                          (pat_elem
+                            (disambig_pat)))))))))
+            (blockContent
+              (expr
+                (int_lit)))
+            (pat
+              (any_ident
+                (up_ident))
+              (parens_pat
                 (inner_pat
-                  (disambig_pat
-                    (up_ident)
-                    (parens_pat
-                      (ERROR
-                        (UNEXPECTED 'z'))
-                      (inner_pat
-                        (disambig_pat)))))))
+                  (pat_elem
+                    (low_ident)
+                    (any_ident
+                      (low_ident)))
+                  (pat_elem
+                    (disambig_pat
+                      (up_ident)
+                      (parens_pat
+                        (inner_pat
+                          (pat_elem
+                            (disambig_pat
+                              (up_ident))))))
+                    (any_ident
+                      (low_ident))))))
             (blockContent
               (expr
                 (int_lit)))
             (pat)
             (blockContent
               (expr
-                (int_lit))))))))
-  (MISSING ";"))
+                (int_lit)))))))))
