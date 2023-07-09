@@ -1,5 +1,5 @@
 {
-  "name": "wty_2",
+  "name": "WTy2",
   "rules": {
     "source_file": {
       "type": "REPEAT",
@@ -802,60 +802,86 @@
       ]
     },
     "disambig_pat": {
-      "type": "SEQ",
+      "type": "CHOICE",
       "members": [
         {
-          "type": "CHOICE",
-          "members": [
-            {
-              "type": "SYMBOL",
-              "name": "up_ident"
-            },
-            {
-              "type": "SEQ",
-              "members": [
-                {
-                  "type": "STRING",
-                  "value": "match"
-                },
-                {
-                  "type": "SYMBOL",
-                  "name": "any_ident"
-                }
-              ]
-            }
-          ]
+          "type": "STRING",
+          "value": "_"
         },
         {
-          "type": "CHOICE",
+          "type": "SYMBOL",
+          "name": "parens_pat"
+        },
+        {
+          "type": "SEQ",
           "members": [
             {
-              "type": "SYMBOL",
-              "name": "parens_pat"
+              "type": "CHOICE",
+              "members": [
+                {
+                  "type": "SYMBOL",
+                  "name": "up_ident"
+                },
+                {
+                  "type": "SEQ",
+                  "members": [
+                    {
+                      "type": "STRING",
+                      "value": "match"
+                    },
+                    {
+                      "type": "SYMBOL",
+                      "name": "any_ident"
+                    }
+                  ]
+                }
+              ]
             },
             {
-              "type": "BLANK"
+              "type": "CHOICE",
+              "members": [
+                {
+                  "type": "SYMBOL",
+                  "name": "parens_pat"
+                },
+                {
+                  "type": "BLANK"
+                }
+              ]
             }
           ]
         }
       ]
     },
     "pat": {
-      "type": "SEQ",
+      "type": "CHOICE",
       "members": [
         {
-          "type": "SYMBOL",
-          "name": "any_ident"
+          "type": "STRING",
+          "value": "_"
         },
         {
-          "type": "CHOICE",
+          "type": "SYMBOL",
+          "name": "parens_pat"
+        },
+        {
+          "type": "SEQ",
           "members": [
             {
               "type": "SYMBOL",
-              "name": "parens_pat"
+              "name": "any_ident"
             },
             {
-              "type": "BLANK"
+              "type": "CHOICE",
+              "members": [
+                {
+                  "type": "SYMBOL",
+                  "name": "parens_pat"
+                },
+                {
+                  "type": "BLANK"
+                }
+              ]
             }
           ]
         }
@@ -891,7 +917,7 @@
       "members": [
         {
           "type": "SYMBOL",
-          "name": "pat"
+          "name": "disambig_pat"
         },
         {
           "type": "SEQ",
@@ -941,12 +967,17 @@
       "type": "SEQ",
       "members": [
         {
-          "type": "STRING",
-          "value": "."
-        },
-        {
-          "type": "SYMBOL",
-          "name": "any_ident"
+          "type": "SEQ",
+          "members": [
+            {
+              "type": "STRING",
+              "value": "."
+            },
+            {
+              "type": "SYMBOL",
+              "name": "any_ident"
+            }
+          ]
         },
         {
           "type": "CHOICE",
@@ -1349,7 +1380,16 @@
       "value": "\\s"
     }
   ],
-  "conflicts": [],
+  "conflicts": [
+    [
+      "any_ident",
+      "disambig_pat"
+    ],
+    [
+      "no_brackets_parens_expr",
+      "parens_pat"
+    ]
+  ],
   "precedences": [],
   "externals": [],
   "inline": [],

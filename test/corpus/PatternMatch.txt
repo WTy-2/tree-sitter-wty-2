@@ -1,0 +1,82 @@
+================================================================================
+Pattern Match
+================================================================================
+foo(x: Bar) := with(x) {
+| Baz(Zero, True, y, (z, w)) -> 0,
+| Baz(Succ(x), _, _, Cons(z, _)) -> 1,
+| _ -> 2
+}
+--------------------------------------------------------------------------------
+
+(source_file
+  (any_dec
+    (var_dec
+      (low_ident)
+      (starts_with_parens_expr
+        (parens_expr
+          (no_brackets_parens_expr
+            (inner_expr
+              (bind
+                (any_ident
+                  (low_ident))
+                (bind_op)
+                (expr
+                  (any_ident
+                    (up_ident))))))))
+      (expr
+        (fun_app
+          (expr
+            (fun_app
+              (low_ident)
+              (parens_expr
+                (no_brackets_parens_expr
+                  (inner_expr
+                    (expr
+                      (any_ident
+                        (low_ident))))))))
+          (block
+            (pat
+              (any_ident
+                (up_ident))
+              (parens_pat
+                (ERROR
+                  (up_ident))
+                (inner_pat
+                  (disambig_pat
+                    (up_ident)
+                    (ERROR
+                      (UNEXPECTED 'y'))
+                    (parens_pat
+                      (ERROR
+                        (UNEXPECTED 'z')
+                        (UNEXPECTED ')))))))
+            (blockContent
+              (expr
+                (int_lit)))
+            (pat
+              (any_ident
+                (up_ident))
+              (parens_pat
+                (ERROR
+                  (inner_pat
+                    (disambig_pat
+                      (up_ident)
+                      (parens_pat
+                        (ERROR
+                          (UNEXPECTED 'x'))))))
+                (inner_pat
+                  (disambig_pat
+                    (up_ident)
+                    (parens_pat
+                      (ERROR
+                        (UNEXPECTED 'z'))
+                      (inner_pat
+                        (disambig_pat)))))))
+            (blockContent
+              (expr
+                (int_lit)))
+            (pat)
+            (blockContent
+              (expr
+                (int_lit))))))))
+  (MISSING ";"))

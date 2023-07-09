@@ -103,10 +103,8 @@ temp := foo[1](1){1};
               (any_ident
                 (up_ident))
               (parens_pat
-                (inner_pat
-                  (pat
-                    (any_ident
-                      (low_ident))))))
+                (ERROR
+                  (UNEXPECTED 'y'))))
             (blockContent
               (expr
                 (any_ident

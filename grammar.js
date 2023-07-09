@@ -47,7 +47,20 @@ const some_semi_sep = (p) => some_sep(p, ";");
 const many_bar_sep = (p) => many_sep(p, "|");
 
 module.exports = grammar({
-  name: "wty_2",
+  name: "WTy2",
+
+  // Ideally we wouldn't need these, but removing all ambiguities is
+  // challenging
+  // See how many conflicts are required for Haskell's grammar:
+  // https://github.com/tree-sitter/tree-sitter-haskell/blob/master/grammar.js
+  conflicts: ($) => [
+    // Ambiguity with '{'  '('  up_ident  •  ')'
+    // Could turn out to be a pattern match: `{ (Foo) := ...; ... }`
+    // Or an expression: `{ (Foo) }`
+    [$.any_ident, $.disambig_pat],
+    [$.no_brackets_parens_expr, $.parens_pat],
+  ],
+
   rules: {
     source_file: ($) => repeat(seq($.any_dec, ";")),
 
@@ -56,7 +69,7 @@ module.exports = grammar({
 
     low_ident: ($) => /[a-z][a-zA-Z0-9]*/,
     up_ident: ($) => /[A-Z][a-zA-Z0-9]*/,
-    // Associativity correct here?
+    // I have no idea what the associativity here is doing...
     any_ident: ($) => prec.left(choice($.low_ident, $.up_ident)),
     op_ident: ($) => /[\+<=>\-/\\\*\.\|&~]+/,
     int_lit: ($) => /\d+/,
@@ -88,13 +101,17 @@ module.exports = grammar({
         choice(
           $.blockContent,
           seq("\\", $.pat, "->", $.blockContent),
-          // Empty = empty case (i.e: value of closed type `Void`)
+          // Choice: Should empty block represent empty case - i.e: value of
+          // closed type `Void`
+          // Or, should it mean an empty block of statements returning unit
+          // I think latter is neater, but then need to decide on syntax for
+          // former, maybe `{ | }`
           many_comma_sep(seq("|", $.pat, "->", $.blockContent))
         )
       ),
-    // TODO: Not sure why I had to make this left-associative to remove
-    // conflicts. Maybe should be right-associative?
-    // TODO: Allow for blocks without parens: `do { ... }` vs `do() { ... }`
+
+    // Left associative ensures `f(1)(2)` is parsed as `(f(1))(2)`, not
+    // `f((1)(2))`
     fun_app: ($) =>
       prec.left(
         8,
@@ -106,7 +123,9 @@ module.exports = grammar({
           seq($.low_ident, $.parens_expr)
         )
       ),
-    // TODO: More weird associativity stuff
+
+    // Operator expressions must be re-associated later (cannot do this during
+    // parsing as WTy2 allows user-defined operators)
     op_app: ($) => prec.left(5, seq($.expr, $.op, some_sep($.expr, $.op))),
     cps_bind: ($) => prec(7, seq("!", $.expr)),
     promoted: ($) => seq("'", $.expr),
@@ -132,19 +151,24 @@ module.exports = grammar({
     // Like `pat` but lowercase constructors must be prefixed by the "match"
     // keyword to disambiguate
     disambig_pat: ($) =>
-      seq(
-        choice($.up_ident, seq("match", $.any_ident)),
-        optional($.parens_pat)
+      choice(
+        "_",
+        $.parens_pat,
+        seq(
+          choice($.up_ident, seq("match", $.any_ident)),
+          optional($.parens_pat)
+        )
       ),
-    // TODO: Operator-constructor patterns
-    pat: ($) => seq($.any_ident, optional($.parens_pat)),
+    pat: ($) =>
+      choice("_", $.parens_pat, seq($.any_ident, optional($.parens_pat))),
     parens_pat: ($) => parens(optional($.inner_pat)),
-    inner_pat: ($) => choice($.pat, some_comma_sep($.pat_elem)),
+    inner_pat: ($) => choice($.disambig_pat, some_comma_sep($.pat_elem)),
     // TODO: Is the prefix "." REALLY necessary here?
     // Does this support nested matching?
-    pat_elem: ($) => seq(".", $.any_ident, optional(seq("=", $.any_ident))),
+    pat_elem: ($) =>
+      seq(seq(".", $.any_ident), optional(seq("=", $.any_ident))),
 
-    // Same precedence as function application to avoid that being prioritised
+    // No idea why precedence of 1 vs 0 is significant here, but it is :/
     var_dec: ($) =>
       prec(
         1,

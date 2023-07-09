@@ -185,7 +185,7 @@
     "fields": {},
     "children": {
       "multiple": true,
-      "required": true,
+      "required": false,
       "types": [
         {
           "type": "any_ident",
@@ -342,7 +342,7 @@
       "required": true,
       "types": [
         {
-          "type": "pat",
+          "type": "disambig_pat",
           "named": true
         },
         {
@@ -498,7 +498,7 @@
     "fields": {},
     "children": {
       "multiple": true,
-      "required": true,
+      "required": false,
       "types": [
         {
           "type": "any_ident",
@@ -756,6 +756,10 @@
   },
   {
     "type": "]",
+    "named": false
+  },
+  {
+    "type": "_",
     "named": false
   },
   {
