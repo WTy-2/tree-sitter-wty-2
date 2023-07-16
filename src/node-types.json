@@ -90,7 +90,7 @@
           "named": true
         },
         {
-          "type": "pat",
+          "type": "inner_pat",
           "named": true
         }
       ]
@@ -211,10 +211,6 @@
           "named": true
         },
         {
-          "type": "bind_op",
-          "named": true
-        },
-        {
           "type": "expr",
           "named": true
         },
@@ -238,7 +234,15 @@
           "named": true
         },
         {
+          "type": "int_lit",
+          "named": true
+        },
+        {
           "type": "parens_pat",
+          "named": true
+        },
+        {
+          "type": "str_lit",
           "named": true
         },
         {
@@ -309,6 +313,10 @@
         },
         {
           "type": "promoted",
+          "named": true
+        },
+        {
+          "type": "str_lit",
           "named": true
         }
       ]
@@ -543,7 +551,15 @@
           "named": true
         },
         {
+          "type": "int_lit",
+          "named": true
+        },
+        {
           "type": "parens_pat",
+          "named": true
+        },
+        {
+          "type": "str_lit",
           "named": true
         }
       ]
@@ -820,6 +836,10 @@
   {
     "type": "pattern",
     "named": false
+  },
+  {
+    "type": "str_lit",
+    "named": true
   },
   {
     "type": "type",

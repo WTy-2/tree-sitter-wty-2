@@ -90,81 +90,86 @@ foo(x: Bar) := with(x) {
                       (any_ident
                         (low_ident))))))))
           (block
-            (pat
-              (any_ident
-                (up_ident))
-              (parens_pat
-                (inner_pat
-                  (pat_elem
-                    (disambig_pat
-                      (up_ident)))
-                  (pat_elem
-                    (disambig_pat
-                      (up_ident)))
-                  (pat_elem
-                    (low_ident))
-                  (pat_elem
-                    (disambig_pat
-                      (parens_pat
-                        (inner_pat
-                          (pat_elem
-                            (low_ident))
-                          (pat_elem
-                            (low_ident)))))))))
+            (inner_pat
+              (pat_elem
+                (disambig_pat
+                  (up_ident)
+                  (parens_pat
+                    (inner_pat
+                      (pat_elem
+                        (disambig_pat
+                          (up_ident)))
+                      (pat_elem
+                        (disambig_pat
+                          (up_ident)))
+                      (pat_elem
+                        (low_ident))
+                      (pat_elem
+                        (disambig_pat
+                          (parens_pat
+                            (inner_pat
+                              (pat_elem
+                                (low_ident))
+                              (pat_elem
+                                (low_ident)))))))))))
             (blockContent
               (expr
                 (int_lit)))
-            (pat
-              (any_ident
-                (up_ident))
-              (parens_pat
-                (inner_pat
-                  (pat_elem
-                    (disambig_pat
-                      (up_ident)
-                      (parens_pat
-                        (inner_pat
-                          (pat_elem
-                            (low_ident))))))
-                  (pat_elem
-                    (disambig_pat))
-                  (pat_elem
-                    (disambig_pat))
-                  (pat_elem
-                    (disambig_pat
-                      (up_ident)
-                      (parens_pat
-                        (inner_pat
-                          (pat_elem
-                            (low_ident))
-                          (pat_elem
-                            (disambig_pat)))))))))
+            (inner_pat
+              (pat_elem
+                (disambig_pat
+                  (up_ident)
+                  (parens_pat
+                    (inner_pat
+                      (pat_elem
+                        (disambig_pat
+                          (up_ident)
+                          (parens_pat
+                            (inner_pat
+                              (pat_elem
+                                (low_ident))))))
+                      (pat_elem
+                        (disambig_pat))
+                      (pat_elem
+                        (disambig_pat))
+                      (pat_elem
+                        (disambig_pat
+                          (up_ident)
+                          (parens_pat
+                            (inner_pat
+                              (pat_elem
+                                (low_ident))
+                              (pat_elem
+                                (disambig_pat)))))))))))
             (blockContent
               (expr
                 (int_lit)))
-            (pat
-              (any_ident
-                (up_ident))
-              (parens_pat
-                (inner_pat
-                  (pat_elem
-                    (low_ident)
-                    (any_ident
-                      (low_ident)))
-                  (pat_elem
-                    (disambig_pat
-                      (up_ident)
-                      (parens_pat
-                        (inner_pat
-                          (pat_elem
-                            (disambig_pat
-                              (up_ident))))))
-                    (any_ident
-                      (low_ident))))))
+            (inner_pat
+              (pat_elem
+                (disambig_pat
+                  (up_ident)
+                  (parens_pat
+                    (inner_pat
+                      (pat_elem
+                        (low_ident)
+                        (any_ident
+                          (low_ident)))
+                      (pat_elem
+                        (disambig_pat
+                          (up_ident)
+                          (parens_pat
+                            (inner_pat
+                              (pat_elem
+                                (disambig_pat
+                                  (up_ident))))))
+                        (any_ident
+                          (low_ident))))))))
             (blockContent
               (expr
                 (int_lit)))
-            (pat)
+            (inner_pat
+              (pat_elem
+                (disambig_pat)))
             (blockContent
               (expr
                 (int_lit)))))))))

@@ -46,10 +46,6 @@ const some_semi_sep = (p) => some_sep(p, ";");
 
 const many_bar_sep = (p) => many_sep(p, "|");
 
-const match_ident = ($) => choice(seq("match", $.any_ident), $.up_ident);
-
-const def_ident = ($) => choice(seq("def", $.any_ident), $.low_ident);
-
 module.exports = grammar({
   name: "WTy2",
 
@@ -58,9 +54,7 @@ module.exports = grammar({
   // See how many conflicts are required for Haskell's grammar:
   // https://github.com/tree-sitter/tree-sitter-haskell/blob/master/grammar.js
   conflicts: ($) => [
-    // Ambiguity with '{'  '('  up_ident  •  ')'
-    // Could turn out to be a pattern match: `{ (Foo) := ...; ... }`
-    // Or an expression: `{ (Foo) }`
+    // Ambiguities between pattern matches and expressions in braces
     [$.any_ident, $.disambig_pat],
     [$.no_brackets_parens_expr, $.parens_pat],
     [$.any_ident, $.pat_elem],
@@ -68,17 +62,24 @@ module.exports = grammar({
     [$.any_ident, $.var_dec],
   ],
 
+  inline: ($) => [$.match_ident, $.def_ident],
+
+  // Currently allowing Haskell and C-style comments because I haven't made
+  // my mind up on which I like more...
+  // TODO: Support block comments
+  extras: ($) => [choice(/\s+/, /\/\/[^\n\r]*[\n\r]/, /--[^\n\r]*[\n\r]/)],
+
   rules: {
     source_file: ($) => repeat(seq($.any_dec, ";")),
-
-    /* See Haskell parser combinator grammar (or spec) for explanations of the
-     * purpose of many of these constructs */
 
     low_ident: ($) => /[a-z][a-zA-Z0-9]*/,
     up_ident: ($) => /[A-Z][a-zA-Z0-9]*/,
     any_ident: ($) => choice($.low_ident, $.up_ident),
-    op_ident: ($) => /[\+<=>\-/\\\*\.\|&~]+/,
+    match_ident: ($) => choice(seq("match", $.any_ident), $.up_ident),
+    def_ident: ($) => choice(seq("def", $.any_ident), $.low_ident),
+    op_ident: ($) => /[$\+<=>\-/\\\*\.\|&~]+/,
     int_lit: ($) => /\d+/,
+    str_lit: ($) => /"[^"\n]*"/,
 
     expr: ($) =>
       prec(
@@ -93,6 +94,7 @@ module.exports = grammar({
             $.cps_bind,
             $.op_app,
             $.int_lit,
+            $.str_lit,
             $.promoted
           )
         )
@@ -106,13 +108,13 @@ module.exports = grammar({
       braces(
         choice(
           $.blockContent,
-          seq("\\", $.pat, "->", $.blockContent),
+          seq("\\", $.inner_pat, "->", $.blockContent),
           // Choice: Should empty block represent empty case - i.e: value of
           // closed type `Void`
           // Or, should it mean an empty block of statements returning unit
           // I think latter is neater, but then need to decide on syntax for
           // former, maybe `{ | }`
-          many_comma_sep(seq("|", $.pat, "->", $.blockContent))
+          many_comma_sep(seq("|", $.inner_pat, "->", $.blockContent))
         )
       ),
 
@@ -152,31 +154,40 @@ module.exports = grammar({
 
     // Like `pat` but lowercase constructors must be prefixed by the "match"
     // keyword to disambiguate
+    // TODO: Is this _really_ the neatest way to organise pattern match rules?
     disambig_pat: ($) =>
-      choice("_", $.parens_pat, seq(match_ident($), optional($.parens_pat))),
+      choice(
+        "_",
+        $.int_lit,
+        $.str_lit,
+        $.parens_pat,
+        seq($.match_ident, optional($.parens_pat))
+      ),
 
     pat: ($) =>
-      choice("_", $.parens_pat, seq($.any_ident, optional($.parens_pat))),
+      choice(
+        "_",
+        $.int_lit,
+        $.str_lit,
+        $.parens_pat,
+        seq($.any_ident, optional($.parens_pat))
+      ),
     parens_pat: ($) => parens(optional($.inner_pat)),
     inner_pat: ($) => some_comma_sep($.pat_elem),
-    // TODO: Is the prefix "." REALLY necessary here?
-    // Does this support nested matching?
     pat_elem: ($) =>
-      seq(
-        choice(def_ident($), $.disambig_pat),
-        optional(seq("=", $.any_ident))
-      ),
+      seq(choice($.def_ident, $.disambig_pat), optional(seq("=", $.any_ident))),
 
     // No idea why precedence of 1 vs 0 is significant here, but it is :/
     var_dec: ($) =>
       seq(
         choice(
-          seq(choice($.bind, $.irrefutable_match), "="),
-          seq($.any_ident, ":="),
+          seq($.bind, "="),
+          seq(choice($.any_ident, $.irrefutable_match), ":="),
           // Function definition
           seq(
-            def_ident($),
+            $.def_ident,
             $.starts_with_parens_expr,
+            // TODO: Should other binding operators be allowed here?
             choice(seq(":", $.expr, "="), ":=")
           )
         ),
@@ -193,6 +204,8 @@ module.exports = grammar({
         $.any_ident,
         choice($.closed_ty_dec_RHS, optional($.open_ty_dec_RHS))
       ),
+    // TODO: Allow just type signatures of variables to be declared in the body
+    // (i.e: do not require default impl)
     open_ty_dec_RHS: ($) => seq($.var_dec_block, optional(seq("<:", $.expr))),
     closed_ty_dec_RHS: ($) => seq("=", $.expr),
 
@@ -200,7 +213,9 @@ module.exports = grammar({
       seq(
         $.any_ident,
         optional($.starts_with_parens_expr),
-        optional(seq($.bind_op, $.expr))
+        // GADT-style-syntax, expression must reduce down to a type constructed
+        // with the type constructor defined at the start
+        optional(seq(":", $.expr))
       ),
     dat_ty_dec: ($) =>
       seq(

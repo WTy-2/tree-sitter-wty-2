@@ -1,0 +1,38 @@
+================================================================================
+At-Patterns
+================================================================================
+def True(True@True: 'True): 'True = True;
+--------------------------------------------------------------------------------
+
+(source_file
+  (any_dec
+    (var_dec
+      (any_ident
+        (up_ident))
+      (starts_with_parens_expr
+        (parens_expr
+          (no_brackets_parens_expr
+            (ERROR
+              (pat
+                (any_ident
+                  (up_ident)))
+              (UNEXPECTED '@'))
+            (inner_expr
+              (bind
+                (pat
+                  (any_ident
+                    (up_ident)))
+                (bind_op)
+                (expr
+                  (promoted
+                    (expr
+                      (any_ident
+                        (up_ident))))))))))
+      (expr
+        (promoted
+          (expr
+            (any_ident
+              (up_ident)))))
+      (expr
+        (any_ident
+          (up_ident))))))
