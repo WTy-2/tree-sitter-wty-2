@@ -47,7 +47,7 @@ const some_semi_sep = (p) => some_sep(p, ";");
 const many_bar_sep = (p) => many_sep(p, "|");
 
 module.exports = grammar({
-  name: "WTy2",
+  name: "wty_2",
 
   // Ideally we wouldn't need these, but removing all ambiguities is
   // challenging
